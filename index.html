@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe | Games</title>
+</head>
+<body>
+
+<!-- Kopfzeile ---------------------------------------------------------------------------------------------------------------------- -->
+
+    <div class="header">
+        <h1>Tic Tac Toe</h1>
+        <p>Oder auch Drei gewinnt, Kreis und Kreuz, oder Dodelschach <small>(<a href="https://de.wikipedia.org/wiki/Tic-Tac-Toe" target="_blank">laut Wikipedia</a>)</small></p>
+    </div>
+
+<!-- Spielerinfos und Einstellungen ------------------------------------------------------------------------------------------------- -->
+
+    <div class="infos">
+        <div class="spieler spieler1" id="spieler1">
+            <div class="name name1" id="name1">
+                Spieler 1
+            </div>
+            <div class="auswahl-sysmbol" id="auswahl-sysmbol1">
+                X
+            </div>
+        </div>
+
+        <div class="spieler spieler2" id="spieler2">
+            <div class="name name2" id="name2">
+                Spieler 2
+            </div>
+            <div class="auswahl-sysmbol" id="auswahl-sysmbol2">
+                O
+            </div>
+        </div>
+    </div>
+
+<!-- Nachrichten -------------------------------------------------------------------------------------------------------------------- -->
+
+    <div class="nachrichten" id="nachrichten">
+
+    </div>
+
+<!-- Spielfeld ---------------------------------------------------------------------------------------------------------------------- -->
+
+    <div class="spielfeld">
+        <table id="table-feld">
+            <tr>
+                <td class="feld" id="eins" onclick="feldauswahl('eins')"></td>
+                <td class="feld" id="zwei" onclick="feldauswahl('zwei')"></td>
+                <td class="feld" id="drei" onclick="feldauswahl('drei')"></td>
+            </tr>
+            <tr>
+                <td class="feld" id="vier" onclick="feldauswahl('vier')"></td>
+                <td class="feld" id="fuenf" onclick="feldauswahl('fuenf')"></td>
+                <td class="feld" id="sechs" onclick="feldauswahl('sechs')"></td>
+            </tr>
+            <tr>
+                <td class="feld" id="sieben" onclick="feldauswahl('sieben')"></td>
+                <td class="feld" id="acht" onclick="feldauswahl('acht')"></td>
+                <td class="feld" id="neun" onclick="feldauswahl('neun')"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div>
+        <button id="neustart">Neues Spiel!</button>
+    </div>
+ 
+<!-- CSS ---------------------------------------------------------------------------------------------------------------------------- -->    
+
+    <style>
+        body{
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .infos, .spielfeld{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .spieler{
+            margin: 10px 38px;
+            font-size: 18pt;
+            padding: 10px 10px;
+            border-radius: 15px;
+            border: solid 1px lightgrey;
+        }
+
+        .spielfeld{
+            margin-top: 30px;
+        }
+
+        .nachrichten{
+            margin-top: 20px;
+            font-size: 18pt;
+        }
+
+        .auswahl-sysmbol{
+            margin-top: 20px;
+        }
+
+        table, tr, td{
+            border: solid 1px lightgrey;
+            border-collapse: collapse;
+            font-size: 36pt;
+        }
+
+        td{
+            width: 100px;
+            height: 100px;
+        }
+
+        td:hover{
+            background-color: rgb(214, 255, 219);
+            cursor: pointer;
+        }
+
+        #neustart{
+            margin-top: 20px;
+            border: none;
+            border-radius: 7px;
+            padding: 10px 15px;
+            font-size: 16pt;
+        }
+    </style>
+
+<!-- JavaScript --------------------------------------------------------------------------------------------------------------------- -->
+
+    <script>
+        
+        // Startvariablen setzen ///////////////////////////////////////////////////////////////////////////////
+                // Welcher Spieler ist dran?
+                var spieler_dran = 1;
+                spielerauswahl(spieler_dran);
+
+                var spieler   = {
+                    1: document.getElementById("name1").innerHTML,
+                    2: document.getElementById("name2").innerHTML
+                };        
+                var spieler_symbol = {
+                    1: document.getElementById("auswahl-sysmbol1").innerHTML,
+                    2: document.getElementById("auswahl-sysmbol2").innerHTML
+                };
+                var eins   = document.getElementById("eins");
+                var zwei   = document.getElementById("zwei");
+                var drei   = document.getElementById("drei");
+                var vier   = document.getElementById("vier");
+                var fuenf  = document.getElementById("fuenf");
+                var sechs  = document.getElementById("sechs");
+                var sieben = document.getElementById("sieben");
+                var acht   = document.getElementById("acht");
+                var neun   = document.getElementById("neun");
+
+        // Der "Neues Spiel!"-Button ///////////////////////////////////////////////////////////////////////////////
+        document.getElementById("neustart").addEventListener("click", function(){
+            feld_leeren();
+            document.getElementById("nachrichten").innerHTML = "";
+            ist_start = 1;
+            feld_sperren(false);
+        })
+
+        document.getElementById("neustart").addEventListener("mouseover", function(){           
+            this.style.cursor = "pointer";
+        })
+
+        // Spielerwechsel ///////////////////////////////////////////////////////////////////////////////
+        function spielerauswahl(spieler){
+            if(spieler == 1){
+                document.getElementById("spieler1").style.border = "solid 1px red";
+                document.getElementById("spieler2").style.border = "solid 1px lightgrey";
+            }
+            else{
+                document.getElementById("spieler1").style.border = "solid 1px lightgrey";
+                document.getElementById("spieler2").style.border = "solid 1px red";
+            }
+        }
+        
+        // Feld wird angeklickt ///////////////////////////////////////////////////////////////////////////////
+        function feldauswahl(feld){
+
+            feld_frei = document.getElementById(feld).innerHTML
+
+            if(spieler_dran == 1){
+                if(feld_frei == ""){
+                    document.getElementById(feld).innerHTML = document.getElementById("auswahl-sysmbol1").innerHTML;                    
+                    sieg_pruefen(1);
+                    feld_voll();                    
+                    spielerauswahl(2);
+                    spieler_dran = 2;
+                }                
+            }
+            else{
+                if(feld_frei == ""){
+                    document.getElementById(feld).innerHTML = document.getElementById("auswahl-sysmbol2").innerHTML;                    
+                    sieg_pruefen(2);
+                    feld_voll();                    
+                    spielerauswahl(1);
+                    spieler_dran = 1;
+                }
+            }
+            
+        }
+        
+        // Alles auf Startzustand zurück ///////////////////////////////////////////////////////////////////////////////
+        function feld_leeren(){
+            eins.innerHTML = "";
+            zwei.innerHTML = "";
+            drei.innerHTML = "";
+            vier.innerHTML = "";
+            fuenf.innerHTML = "";
+            sechs.innerHTML = "";
+            sieben.innerHTML = "";
+            acht.innerHTML = "";
+            neun.innerHTML = "";            
+            document.getElementById("spieler1").style.backgroundColor = "white";
+            document.getElementById("spieler2").style.backgroundColor = "white";
+            spielerauswahl(1);
+        }
+
+        // Ist das Feld voll? Wenn ja, und kein Sieg, dann ist unentschieden //////////////////////////////////////////
+        function feld_voll(){
+            if( eins.innerHTML != "" &&
+                zwei.innerHTML != "" &&
+                drei.innerHTML != "" &&
+                vier.innerHTML != "" &&
+                fuenf.innerHTML != "" &&
+                sechs.innerHTML != "" &&
+                sieben.innerHTML != "" &&
+                acht.innerHTML != "" &&
+                neun.innerHTML != ""){
+                    document.getElementById("nachrichten").innerHTML = "Unentschieden!";
+                    spieler_dran = 1;
+                }            
+        }
+
+        // Spielfeld sperren /////////////////////////////////////////////////////////////////////////////////////////////
+        function feld_sperren(sperre){
+
+            if(sperre == true){
+                document.getElementById("table-feld").innerHTML = "" + 
+                    "\n<tr>\n" +
+                        "<td class=\"feld\" id=\"eins\">" + eins.innerHTML + "</td>\n" +
+                        "<td class=\"feld\" id=\"zwei\">" + zwei.innerHTML + "</td>\n" +
+                        "<td class=\"feld\" id=\"drei\">" + drei.innerHTML + "</td>\n" +
+                        "</tr>\n" +
+                    "<tr>\n" +
+                        "<td class=\"feld\" id=\"vier\">" + vier.innerHTML + "</td>\n" +
+                        "<td class=\"feld\" id=\"fuenf\">" + fuenf.innerHTML + "</td>\n" +
+                        "<td class=\"feld\" id=\"sechs\">" + sechs.innerHTML + "</td>\n" +
+                        "</tr>\n" +
+                    "<tr>\n" +
+                        "<td class=\"feld\" id=\"sieben\">" + sieben.innerHTML + "</td>\n" +
+                        "<td class=\"feld\" id=\"acht\">" + acht.innerHTML + "</td>\n" +
+                        "<td class=\"feld\" id=\"neun\">" + neun.innerHTML + "</td>\n" +
+                    "</tr>\n";
+                    spieler_dran = 1;
+            }
+            else{
+                document.getElementById("table-feld").innerHTML = "" +
+                    "\n<tr>\n" +
+                        "<td class=\"feld\" id=\"eins\" onclick=\"feldauswahl(\'eins\')\"></td>\n" +
+                        "<td class=\"feld\" id=\"zwei\" onclick=\"feldauswahl(\'zwei\')\"></td>\n" +
+                        "<td class=\"feld\" id=\"drei\" onclick=\"feldauswahl(\'drei\')\"></td>\n" +
+                        "</tr>\n" +
+                    "<tr>\n" +
+                        "<td class=\"feld\" id=\"vier\" onclick=\"feldauswahl(\'vier\')\"></td>\n" +
+                        "<td class=\"feld\" id=\"fuenf\" onclick=\"feldauswahl(\'fuenf\')\"></td>\n" +
+                        "<td class=\"feld\" id=\"sechs\" onclick=\"feldauswahl(\'sechs\')\"></td>\n" +
+                        "</tr>\n" +
+                    "<tr>\n" +
+                        "<td class=\"feld\" id=\"sieben\" onclick=\"feldauswahl(\'sieben\')\"></td>\n" +
+                        "<td class=\"feld\" id=\"acht\" onclick=\"feldauswahl(\'acht\')\"></td>\n" +
+                        "<td class=\"feld\" id=\"neun\" onclick=\"feldauswahl(\'neun\')\"></td>\n" +
+                    "</tr>\n";
+                    spieler_dran = 1;
+            }
+        }
+
+        // Sieg wird geprüft //////////////////////////////////////////////////////////////////////////////////////////////////
+        function sieg_pruefen(nummer){
+            var gewonnen = false;
+            //var sieg = new Audio("sieg.mp3");
+            
+            // Zeile 1
+            if( eins.innerHTML == spieler_symbol[nummer] &&
+                zwei.innerHTML == spieler_symbol[nummer] &&
+                drei.innerHTML == spieler_symbol[nummer]                
+            ){
+                
+            }
+
+            // Zeile 2
+            if( vier.innerHTML == spieler_symbol[nummer] &&
+                fuenf.innerHTML == spieler_symbol[nummer] &&
+                sechs.innerHTML == spieler_symbol[nummer]                
+            ){
+                document.getElementById("nachrichten").innerHTML = spieler[nummer] + " hat gewonnen!";
+                feld_sperren(true);
+                //sieg.play();
+                return;
+            }
+
+            // Zeile 3
+            if( sieben.innerHTML == spieler_symbol[nummer] &&
+                acht.innerHTML == spieler_symbol[nummer] &&
+                neun.innerHTML == spieler_symbol[nummer]                
+            ){
+                document.getElementById("nachrichten").innerHTML = spieler[nummer] + " hat gewonnen!";
+                feld_sperren(true);
+                //sieg.play();
+                return;
+            }
+
+            // Spalte 1
+            if( eins.innerHTML == spieler_symbol[nummer] &&
+                vier.innerHTML == spieler_symbol[nummer] &&
+                sieben.innerHTML == spieler_symbol[nummer]                
+            ){
+                document.getElementById("nachrichten").innerHTML = spieler[nummer] + " hat gewonnen!";
+                feld_sperren(true);
+                //sieg.play();
+                return;
+            }
+
+            // Spalte 2
+            if( zwei.innerHTML == spieler_symbol[nummer] &&
+                fuenf.innerHTML == spieler_symbol[nummer] &&
+                acht.innerHTML == spieler_symbol[nummer]                
+            ){
+                document.getElementById("nachrichten").innerHTML = spieler[nummer] + " hat gewonnen!";
+                feld_sperren(true);
+                //sieg.play();
+                return;
+            }
+
+            // Spalte 3
+            if( drei.innerHTML == spieler_symbol[nummer] &&
+                sechs.innerHTML == spieler_symbol[nummer] &&
+                neun.innerHTML == spieler_symbol[nummer]                
+            ){
+                document.getElementById("nachrichten").innerHTML = spieler[nummer] + " hat gewonnen!";
+                feld_sperren(true);
+                //sieg.play();
+                return;
+            }
+
+             // Diagonale 1 (oben links nach unten rechts)
+             if(eins.innerHTML == spieler_symbol[nummer] &&
+                fuenf.innerHTML == spieler_symbol[nummer] &&
+                neun.innerHTML == spieler_symbol[nummer]                
+            ){
+                document.getElementById("nachrichten").innerHTML = spieler[nummer] + " hat gewonnen!";
+                feld_sperren(true);
+                //sieg.play();
+                return;
+            }
+
+            // Diagonale 1 (oben rechts nach unten links)
+            if( drei.innerHTML == spieler_symbol[nummer] &&
+                fuenf.innerHTML == spieler_symbol[nummer] &&
+                sieben.innerHTML == spieler_symbol[nummer]                
+            ){
+                document.getElementById("nachrichten").innerHTML = spieler[nummer] + " hat gewonnen!";
+                feld_sperren(true);
+                //sieg.play();
+                return;
+            }
+            
+
+        }
+    </script>
+
+</body>
+</html>
